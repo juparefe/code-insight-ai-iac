@@ -30,3 +30,13 @@ module "lambda" {
   security_group_id  = module.security.lambda_security_group_id
   private_subnet_ids = module.networking.private_subnet_ids
 }
+
+module "api_gateway" {
+  source = "./modules/api_gateway"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  lambda_function_name = module.lambda.function_name
+  lambda_function_arn  = module.lambda.function_arn
+}
