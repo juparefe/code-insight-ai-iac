@@ -28,10 +28,11 @@ module "lambda" {
   project_name = var.project_name
   environment  = var.environment
 
-  lambda_package_path = var.lambda_package_path
-  lambda_role_arn     = module.iam.lambda_role_arn
-  security_group_id   = module.security.lambda_security_group_id
-  private_subnet_ids  = module.networking.private_subnet_ids
+  lambda_package_path     = var.lambda_package_path
+  lambda_role_arn         = module.iam.lambda_role_arn
+  security_group_id       = module.security.lambda_security_group_id
+  private_subnet_ids      = module.networking.private_subnet_ids
+  analysis_jobs_queue_arn = module.sqs.analysis_jobs_queue_arn
 
   environment_variables = {
     ANALYSIS_JOBS_QUEUE_URL  = module.sqs.analysis_jobs_queue_url

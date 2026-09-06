@@ -33,3 +33,8 @@ variable "environment_variables" {
   type        = map(string)
   default     = {}
 }
+
+variable "analysis_jobs_queue_arn" {
+  description = "ARN of the SQS queue used for asynchronous analysis jobs"
+  type        = string
+}

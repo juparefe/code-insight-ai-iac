@@ -70,7 +70,10 @@ resource "aws_iam_role_policy" "sqs_analysis_jobs" {
         Effect = "Allow"
 
         Action = [
-          "sqs:SendMessage"
+          "sqs:SendMessage",
+          "sqs:ReceiveMessage",
+          "sqs:DeleteMessage",
+          "sqs:GetQueueAttributes"
         ]
 
         Resource = var.analysis_jobs_queue_arn
