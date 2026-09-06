@@ -8,8 +8,9 @@ module "networking" {
 module "iam" {
   source = "./modules/iam"
 
-  project_name = var.project_name
-  environment  = var.environment
+  project_name            = var.project_name
+  environment             = var.environment
+  analysis_jobs_queue_arn = module.sqs.analysis_jobs_queue_arn
 }
 
 module "security" {
@@ -38,6 +39,14 @@ module "api_gateway" {
   project_name = var.project_name
   environment  = var.environment
 
-  lambda_function_name = module.lambda.function_name
-  lambda_invoke_arn    = module.lambda.invoke_arn
+  lambda_function_name             = module.lambda.function_name
+  lambda_invoke_arn                = module.lambda.invoke_arn
+  integration_timeout_milliseconds = var.api_integration_timeout_milliseconds
+}
+
+module "sqs" {
+  source = "./modules/sqs"
+
+  project_name = var.project_name
+  environment  = var.environment
 }

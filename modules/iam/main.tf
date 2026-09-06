@@ -56,3 +56,25 @@ resource "aws_iam_role_policy" "lambda_bedrock" {
     ]
   })
 }
+
+resource "aws_iam_role_policy" "sqs_analysis_jobs" {
+  name = "${var.project_name}-${var.environment}-sqs-analysis-jobs"
+
+  role = aws_iam_role.lambda.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
+      {
+        Effect = "Allow"
+
+        Action = [
+          "sqs:SendMessage"
+        ]
+
+        Resource = var.analysis_jobs_queue_arn
+      }
+    ]
+  })
+}

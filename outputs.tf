@@ -32,3 +32,7 @@ output "api_id" {
   description = "API Gateway API ID"
   value       = module.api_gateway.api_id
 }
+
+output "analysis_jobs_queue_url" {
+  value = module.sqs.analysis_jobs_queue_url
+}

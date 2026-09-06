@@ -64,13 +64,16 @@ resource "aws_api_gateway_integration" "root" {
 resource "aws_api_gateway_deployment" "this" {
   rest_api_id = aws_api_gateway_rest_api.this.id
 
+  # Hash the full resource bodies (not just their ids) so any attribute change —
+  # e.g. timeout_milliseconds on an integration — forces a new deployment.
+  # Without this, integration edits never reach the stage.
   triggers = {
     redeployment = sha1(jsonencode([
-      aws_api_gateway_resource.proxy.id,
-      aws_api_gateway_method.proxy.id,
-      aws_api_gateway_integration.proxy.id,
-      aws_api_gateway_method.root.id,
-      aws_api_gateway_integration.root.id,
+      aws_api_gateway_resource.proxy,
+      aws_api_gateway_method.proxy,
+      aws_api_gateway_integration.proxy,
+      aws_api_gateway_method.root,
+      aws_api_gateway_integration.root,
     ]))
   }
 

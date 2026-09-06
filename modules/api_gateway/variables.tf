@@ -21,5 +21,5 @@ variable "lambda_invoke_arn" {
 variable "integration_timeout_milliseconds" {
   description = "API Gateway -> Lambda integration timeout. Values above 29000 require the 'Integration timeout for Regional APIs' service quota to be raised for the account."
   type        = number
-  default     = 120000
+  default     = 90000
 }

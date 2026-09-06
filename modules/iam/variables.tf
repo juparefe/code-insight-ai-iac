@@ -7,3 +7,7 @@ variable "environment" {
   description = "Deployment environment"
   type        = string
 }
+
+variable "analysis_jobs_queue_arn" {
+  type = string
+}
