@@ -15,3 +15,8 @@ variable "environment" {
   type        = string
   default     = "dev"
 }
+
+variable "lambda_package_path" {
+  description = "Lambda deployment package path"
+  type        = string
+}

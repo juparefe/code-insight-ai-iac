@@ -22,3 +22,14 @@ variable "private_subnet_ids" {
   description = "Private subnet IDs where Lambda will run"
   type        = list(string)
 }
+
+variable "lambda_package_path" {
+  description = "Path to the Lambda deployment package"
+  type        = string
+}
+
+variable "environment_variables" {
+  description = "Environment variables to pass to the Lambda function"
+  type        = map(string)
+  default     = {}
+}

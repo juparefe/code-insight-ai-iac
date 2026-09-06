@@ -1,0 +1,1 @@
+lambda_package_path = "../code-insight-ai-backend/lambda-package.zip"

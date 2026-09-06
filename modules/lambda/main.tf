@@ -1,19 +1,23 @@
 resource "aws_lambda_function" "this" {
   function_name = "${var.project_name}-${var.environment}"
-  role          = var.lambda_role_arn
 
+  role    = var.lambda_role_arn
   runtime = "nodejs22.x"
-  handler = "index.handler"
+  handler = "dist/lambda.handler"
 
-  filename         = "${path.module}/lambda.zip"
-  source_code_hash = filebase64sha256("${path.module}/lambda.zip")
+  filename         = var.lambda_package_path
+  source_code_hash = filebase64sha256(var.lambda_package_path)
 
-  timeout     = 30
-  memory_size = 512
+  timeout     = 60
+  memory_size = 1024
 
   vpc_config {
     subnet_ids         = var.private_subnet_ids
     security_group_ids = [var.security_group_id]
+  }
+
+  environment {
+    variables = var.environment_variables
   }
 
   tags = {
