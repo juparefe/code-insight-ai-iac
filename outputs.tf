@@ -36,3 +36,13 @@ output "api_id" {
 output "analysis_jobs_queue_url" {
   value = module.sqs.analysis_jobs_queue_url
 }
+
+output "analysis_jobs_table_name" {
+  description = "DynamoDB analysis jobs table name"
+  value       = module.dynamodb.analysis_jobs_table_name
+}
+
+output "analysis_jobs_table_arn" {
+  description = "DynamoDB analysis jobs table ARN"
+  value       = module.dynamodb.analysis_jobs_table_arn
+}
