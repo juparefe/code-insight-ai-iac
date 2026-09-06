@@ -46,3 +46,18 @@ output "analysis_jobs_table_arn" {
   description = "DynamoDB analysis jobs table ARN"
   value       = module.dynamodb.analysis_jobs_table_arn
 }
+
+output "frontend_bucket_name" {
+  description = "S3 bucket name for the frontend"
+  value       = module.frontend.frontend_bucket_name
+}
+
+output "frontend_cloudfront_distribution_id" {
+  description = "CloudFront distribution ID for the frontend"
+  value       = module.frontend.frontend_cloudfront_distribution_id
+}
+
+output "frontend_cloudfront_domain_name" {
+  description = "CloudFront domain name for the frontend"
+  value       = module.frontend.frontend_cloudfront_domain_name
+}
