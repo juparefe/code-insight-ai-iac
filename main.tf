@@ -64,3 +64,10 @@ module "dynamodb" {
   project_name = var.project_name
   environment  = var.environment
 }
+
+module "frontend" {
+  source = "./modules/frontend"
+
+  project_name = var.project_name
+  environment  = var.environment
+}
