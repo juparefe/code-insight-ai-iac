@@ -1,11 +1,8 @@
-resource "aws_apigatewayv2_api" "this" {
-  name          = "${var.project_name}-${var.environment}"
-  protocol_type = "HTTP"
+resource "aws_api_gateway_rest_api" "this" {
+  name = "${var.project_name}-${var.environment}"
 
-  cors_configuration {
-    allow_origins = ["*"]
-    allow_methods = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-    allow_headers = ["content-type"]
+  endpoint_configuration {
+    types = ["REGIONAL"]
   }
 
   tags = {
@@ -13,29 +10,84 @@ resource "aws_apigatewayv2_api" "this" {
   }
 }
 
-resource "aws_apigatewayv2_integration" "lambda" {
-  api_id = aws_apigatewayv2_api.this.id
-
-  integration_type       = "AWS_PROXY"
-  integration_uri        = var.lambda_function_arn
-  integration_method     = "POST"
-  payload_format_version = "2.0"
+# Catch-all resource: every path except "/" is forwarded to Lambda, so the
+# Express app owns the full route hierarchy (/api/v1/repositories/analyze, /health, ...).
+resource "aws_api_gateway_resource" "proxy" {
+  rest_api_id = aws_api_gateway_rest_api.this.id
+  parent_id   = aws_api_gateway_rest_api.this.root_resource_id
+  path_part   = "{proxy+}"
 }
 
-resource "aws_apigatewayv2_route" "default" {
-  api_id = aws_apigatewayv2_api.this.id
-
-  route_key = "$default"
-
-  target = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+resource "aws_api_gateway_method" "proxy" {
+  rest_api_id   = aws_api_gateway_rest_api.this.id
+  resource_id   = aws_api_gateway_resource.proxy.id
+  http_method   = "ANY"
+  authorization = "NONE"
 }
 
-resource "aws_apigatewayv2_stage" "default" {
-  api_id = aws_apigatewayv2_api.this.id
+resource "aws_api_gateway_integration" "proxy" {
+  rest_api_id = aws_api_gateway_rest_api.this.id
+  resource_id = aws_api_gateway_resource.proxy.id
+  http_method = aws_api_gateway_method.proxy.http_method
 
-  name = "$default"
+  # Lambda proxy integrations are always invoked with POST, regardless of the
+  # client's method (which arrives via the ANY method above).
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = var.lambda_invoke_arn
 
-  auto_deploy = true
+  # > 29000 requires the account service quota "Integration timeout for Regional
+  # APIs" to be raised first, otherwise apply fails with a BadRequestException.
+  timeout_milliseconds = var.integration_timeout_milliseconds
+}
+
+# "/" is not matched by {proxy+}; forward it as well.
+resource "aws_api_gateway_method" "root" {
+  rest_api_id   = aws_api_gateway_rest_api.this.id
+  resource_id   = aws_api_gateway_rest_api.this.root_resource_id
+  http_method   = "ANY"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "root" {
+  rest_api_id = aws_api_gateway_rest_api.this.id
+  resource_id = aws_api_gateway_rest_api.this.root_resource_id
+  http_method = aws_api_gateway_method.root.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = var.lambda_invoke_arn
+
+  timeout_milliseconds = var.integration_timeout_milliseconds
+}
+
+resource "aws_api_gateway_deployment" "this" {
+  rest_api_id = aws_api_gateway_rest_api.this.id
+
+  triggers = {
+    redeployment = sha1(jsonencode([
+      aws_api_gateway_resource.proxy.id,
+      aws_api_gateway_method.proxy.id,
+      aws_api_gateway_integration.proxy.id,
+      aws_api_gateway_method.root.id,
+      aws_api_gateway_integration.root.id,
+    ]))
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  depends_on = [
+    aws_api_gateway_integration.proxy,
+    aws_api_gateway_integration.root,
+  ]
+}
+
+resource "aws_api_gateway_stage" "this" {
+  rest_api_id   = aws_api_gateway_rest_api.this.id
+  deployment_id = aws_api_gateway_deployment.this.id
+  stage_name    = var.environment
 }
 
 resource "aws_lambda_permission" "api_gateway" {
@@ -44,5 +96,6 @@ resource "aws_lambda_permission" "api_gateway" {
   function_name = var.lambda_function_name
   principal     = "apigateway.amazonaws.com"
 
-  source_arn = "${aws_apigatewayv2_api.this.execution_arn}/*"
+  # Any stage / method / path on this REST API may invoke the function.
+  source_arn = "${aws_api_gateway_rest_api.this.execution_arn}/*/*"
 }

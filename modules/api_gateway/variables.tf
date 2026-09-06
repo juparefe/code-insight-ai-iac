@@ -13,7 +13,13 @@ variable "lambda_function_name" {
   type        = string
 }
 
-variable "lambda_function_arn" {
-  description = "Lambda function ARN"
+variable "lambda_invoke_arn" {
+  description = "Lambda invoke ARN used as the API Gateway integration URI"
   type        = string
+}
+
+variable "integration_timeout_milliseconds" {
+  description = "API Gateway -> Lambda integration timeout. Values above 29000 require the 'Integration timeout for Regional APIs' service quota to be raised for the account."
+  type        = number
+  default     = 120000
 }

@@ -39,5 +39,5 @@ module "api_gateway" {
   environment  = var.environment
 
   lambda_function_name = module.lambda.function_name
-  lambda_function_arn  = module.lambda.function_arn
+  lambda_invoke_arn    = module.lambda.invoke_arn
 }
