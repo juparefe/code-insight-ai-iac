@@ -1,0 +1,19 @@
+# Local .terraform directories (provider binaries, modules)
+**/.terraform/*
+.terraform/
+
+# Terraform state files - may contain secrets, keep out of git
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# Terraform plan output
+*.tfplan
+
+# CLI config / credentials
+.terraformrc
+terraform.rc
+
+# terraform.tfvars is intentionally tracked in this repo
+!terraform.tfvars
