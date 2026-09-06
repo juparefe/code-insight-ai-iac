@@ -31,6 +31,10 @@ module "lambda" {
   lambda_role_arn     = module.iam.lambda_role_arn
   security_group_id   = module.security.lambda_security_group_id
   private_subnet_ids  = module.networking.private_subnet_ids
+
+  environment_variables = {
+    ANALYSIS_JOBS_QUEUE_URL = module.sqs.analysis_jobs_queue_url
+  }
 }
 
 module "api_gateway" {
