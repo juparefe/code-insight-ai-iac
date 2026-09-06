@@ -11,3 +11,7 @@ variable "environment" {
 variable "analysis_jobs_queue_arn" {
   type = string
 }
+
+variable "analysis_jobs_table_arn" {
+  type = string
+}

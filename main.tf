@@ -11,6 +11,7 @@ module "iam" {
   project_name            = var.project_name
   environment             = var.environment
   analysis_jobs_queue_arn = module.sqs.analysis_jobs_queue_arn
+  analysis_jobs_table_arn = module.dynamodb.analysis_jobs_table_arn
 }
 
 module "security" {
@@ -33,7 +34,8 @@ module "lambda" {
   private_subnet_ids  = module.networking.private_subnet_ids
 
   environment_variables = {
-    ANALYSIS_JOBS_QUEUE_URL = module.sqs.analysis_jobs_queue_url
+    ANALYSIS_JOBS_QUEUE_URL  = module.sqs.analysis_jobs_queue_url
+    ANALYSIS_JOBS_TABLE_NAME = module.dynamodb.analysis_jobs_table_name
   }
 }
 
