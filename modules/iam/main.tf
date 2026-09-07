@@ -202,3 +202,69 @@ resource "aws_iam_role_policy" "github_actions_frontend_deploy" {
     ]
   })
 }
+
+resource "aws_iam_role" "github_actions_backend" {
+  name = "${var.project_name}-${var.environment}-github-actions-backend"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+
+        Principal = {
+          Federated = aws_iam_openid_connect_provider.github.arn
+        }
+
+        Action = "sts:AssumeRoleWithWebIdentity"
+
+        Condition = {
+          StringEquals = {
+            "token.actions.githubusercontent.com:aud"        = "sts.amazonaws.com"
+            "token.actions.githubusercontent.com:repository" = var.github_backend_repo
+            "token.actions.githubusercontent.com:ref"        = var.github_backend_ref
+          }
+
+          StringLike = {
+            "token.actions.githubusercontent.com:sub" = var.github_backend_sub_pattern
+          }
+        }
+      }
+    ]
+  })
+
+  tags = {
+    Name        = "${var.project_name}-${var.environment}-github-actions-backend"
+    Project     = var.project_name
+    Environment = var.environment
+  }
+}
+
+data "aws_region" "current" {}
+
+resource "aws_iam_role_policy" "github_actions_backend_lambda" {
+  name = "${var.project_name}-${var.environment}-github-actions-backend-lambda"
+
+  role = aws_iam_role.github_actions_backend.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
+      {
+        Sid    = "DeployBackendLambdas"
+        Effect = "Allow"
+
+        Action = [
+          "lambda:UpdateFunctionCode",
+          "lambda:GetFunctionConfiguration"
+        ]
+
+        Resource = [
+          "arn:aws:lambda:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:function:${var.project_name}-${var.environment}",
+          "arn:aws:lambda:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:function:${var.project_name}-${var.environment}-worker"
+        ]
+      }
+    ]
+  })
+}

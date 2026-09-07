@@ -12,3 +12,8 @@ output "github_actions_frontend_role_arn" {
   description = "ARN of the role GitHub Actions assumes to deploy the frontend (use as the AWS_FRONTEND_DEPLOY_ROLE_ARN secret)"
   value       = aws_iam_role.github_actions_frontend.arn
 }
+
+output "github_actions_backend_role_arn" {
+  description = "IAM role ARN used by GitHub Actions to deploy the backend"
+  value       = aws_iam_role.github_actions_backend.arn
+}

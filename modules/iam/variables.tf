@@ -49,3 +49,26 @@ variable "github_frontend_sub_pattern" {
   type        = string
   default     = "repo:juparefe@*/code-insight-ai-frontend@*:ref:refs/heads/main"
 }
+
+variable "github_backend_repo" {
+  description = "GitHub owner/repo (matched against the OIDC 'repository' claim) allowed to assume the backend deploy role"
+  type        = string
+  default     = "juparefe/code-insight-ai-backend"
+}
+
+variable "github_backend_ref" {
+  description = "Git ref (matched against the OIDC 'ref' claim) allowed to assume the backend deploy role"
+  type        = string
+  default     = "refs/heads/main"
+}
+
+variable "github_backend_sub_pattern" {
+  description = <<-EOT
+    Pattern matched (StringLike) against the OIDC 'sub' claim for the backend deploy role.
+    This account uses a customized subject claim that embeds immutable numeric IDs
+    (e.g. repo:juparefe@123/code-insight-ai-backend@123:ref:refs/heads/main),
+    so the IDs are wildcarded while owner, repo and branch stay pinned.
+  EOT
+  type        = string
+  default     = "repo:juparefe@*/code-insight-ai-backend@*:ref:refs/heads/main"
+}

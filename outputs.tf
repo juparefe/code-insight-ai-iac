@@ -66,3 +66,8 @@ output "github_actions_frontend_role_arn" {
   description = "Role ARN for the frontend deploy pipeline (GitHub secret AWS_FRONTEND_DEPLOY_ROLE_ARN)"
   value       = module.iam.github_actions_frontend_role_arn
 }
+
+output "github_actions_backend_role_arn" {
+  description = "Role ARN for the backend deploy pipeline (GitHub secret AWS_BACKEND_DEPLOY_ROLE_ARN)"
+  value       = module.iam.github_actions_backend_role_arn
+}
