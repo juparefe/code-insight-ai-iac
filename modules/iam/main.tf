@@ -140,11 +140,13 @@ resource "aws_iam_role" "github_actions_frontend" {
 
         Condition = {
           StringEquals = {
-            "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+            "token.actions.githubusercontent.com:aud"        = "sts.amazonaws.com"
+            "token.actions.githubusercontent.com:repository" = var.github_frontend_repo
+            "token.actions.githubusercontent.com:ref"        = var.github_frontend_ref
           }
 
           StringLike = {
-            "token.actions.githubusercontent.com:sub" = "repo:juparefe/code-insight-ai-frontend:ref:refs/heads/main"
+            "token.actions.githubusercontent.com:sub" = var.github_frontend_sub_pattern
           }
         }
       }
