@@ -157,3 +157,46 @@ resource "aws_iam_role" "github_actions_frontend" {
     Environment = var.environment
   }
 }
+
+resource "aws_iam_role_policy" "github_actions_frontend_deploy" {
+  name = "${var.project_name}-${var.environment}-github-actions-frontend-deploy"
+  role = aws_iam_role.github_actions_frontend.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
+      {
+        Sid    = "ListFrontendBucket"
+        Effect = "Allow"
+
+        Action = [
+          "s3:ListBucket"
+        ]
+
+        Resource = var.frontend_bucket_arn
+      },
+      {
+        Sid    = "WriteFrontendObjects"
+        Effect = "Allow"
+
+        Action = [
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ]
+
+        Resource = "${var.frontend_bucket_arn}/*"
+      },
+      {
+        Sid    = "InvalidateFrontendDistribution"
+        Effect = "Allow"
+
+        Action = [
+          "cloudfront:CreateInvalidation"
+        ]
+
+        Resource = var.frontend_cloudfront_distribution_arn
+      }
+    ]
+  })
+}

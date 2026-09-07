@@ -3,6 +3,16 @@ output "frontend_bucket_name" {
   value       = aws_s3_bucket.frontend.bucket
 }
 
+output "frontend_bucket_arn" {
+  description = "Frontend S3 bucket ARN"
+  value       = aws_s3_bucket.frontend.arn
+}
+
+output "frontend_cloudfront_distribution_arn" {
+  description = "Frontend CloudFront distribution ARN"
+  value       = aws_cloudfront_distribution.frontend.arn
+}
+
 output "frontend_cloudfront_distribution_id" {
   description = "Frontend CloudFront distribution ID"
   value       = aws_cloudfront_distribution.frontend.id

@@ -61,3 +61,8 @@ output "frontend_cloudfront_domain_name" {
   description = "CloudFront domain name for the frontend"
   value       = module.frontend.frontend_cloudfront_domain_name
 }
+
+output "github_actions_frontend_role_arn" {
+  description = "Role ARN for the frontend deploy pipeline (GitHub secret AWS_FRONTEND_DEPLOY_ROLE_ARN)"
+  value       = module.iam.github_actions_frontend_role_arn
+}

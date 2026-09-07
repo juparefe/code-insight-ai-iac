@@ -12,6 +12,9 @@ module "iam" {
   environment             = var.environment
   analysis_jobs_queue_arn = module.sqs.analysis_jobs_queue_arn
   analysis_jobs_table_arn = module.dynamodb.analysis_jobs_table_arn
+
+  frontend_bucket_arn                  = module.frontend.frontend_bucket_arn
+  frontend_cloudfront_distribution_arn = module.frontend.frontend_cloudfront_distribution_arn
 }
 
 module "security" {
